@@ -11,7 +11,6 @@ public class DBHandler extends Configs {
     public Connection getDbConnection() throws ClassNotFoundException, SQLException {
         String connectionString = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
         Connection dbConnection;
-        Class.forName("com.mysql.jdbc.Driver");
 
         dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPass);
 
@@ -71,7 +70,6 @@ public class DBHandler extends Configs {
         String select = "SELECT * FROM products";
         try {
             PreparedStatement prSt = getDbConnection().prepareStatement(select);
-
             resSet = prSt.executeQuery();
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
