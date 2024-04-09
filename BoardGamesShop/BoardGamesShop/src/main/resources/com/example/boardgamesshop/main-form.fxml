@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.boardgamesshop.Controllers.MainForm">
@@ -28,7 +29,7 @@
                             <TableColumn fx:id="name" maxWidth="150.0" prefWidth="150.0" text="name" />
                               <TableColumn fx:id="description" prefWidth="230.0" text="description" />
                               <TableColumn fx:id="quantity" maxWidth="55.0" prefWidth="55.0" text="quantity" />
-                              <TableColumn fx:id="price" maxWidth="35.0" prefWidth="75.0" text="price" />
+                              <TableColumn fx:id="price" maxWidth="50.0" prefWidth="75.0" text="price" />
                           </columns>
                         </TableView>
                         <Label layoutX="635.0" layoutY="14.0" text="Cart" />
@@ -43,12 +44,60 @@
             </Tab>
           <Tab text="Products">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView id="product_table" fx:id="prod_table" editable="true" layoutX="4.0" layoutY="6.0" onMouseClicked="#rowClicked" prefHeight="165.0" prefWidth="894.0">
+                           <columns>
+                              <TableColumn fx:id="prod_id" maxWidth="20.0" prefWidth="75.0" text="id" />
+                              <TableColumn fx:id="prod_name" maxWidth="250.0" prefWidth="200.0" text="name" />
+                              <TableColumn fx:id="prod_description" prefWidth="500.0" text="description" />
+                              <TableColumn fx:id="prod_quantity" maxWidth="55.0" prefWidth="55.0" text="quantity" />
+                              <TableColumn fx:id="prod_price" maxWidth="50.0" prefWidth="75.0" text="price" />
+                           </columns>
+                        </TableView>
+                        <TextField fx:id="input_name" layoutX="78.0" layoutY="198.0" prefHeight="25.0" prefWidth="120.0" />
+                        <TextField fx:id="input_description" layoutX="233.0" layoutY="198.0" prefHeight="25.0" prefWidth="253.0" />
+                        <TextField fx:id="input_quantity" layoutX="515.0" layoutY="198.0" prefHeight="25.0" prefWidth="55.0" />
+                        <TextField fx:id="input_price" layoutX="597.0" layoutY="198.0" prefHeight="25.0" prefWidth="76.0" />
+                        <Button fx:id="product_update_button" layoutX="704.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="119.0" text="Update" />
+                        <Button fx:id="product_delete_button" layoutX="26.0" layoutY="257.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="119.0" text="Delete" />
+                        <Label layoutX="79.0" layoutY="176.0" text="Name" />
+                        <Label layoutX="239.0" layoutY="176.0" text="Description" />
+                        <Label layoutX="515.0" layoutY="176.0" text="Quantity" />
+                        <Label layoutX="597.0" layoutY="176.0" text="Price" />
+                        <Label layoutX="26.0" layoutY="177.0" text="ID" />
+                        <TextField fx:id="input_id" editable="false" layoutX="26.0" layoutY="198.0" prefHeight="25.0" prefWidth="32.0" />
+                        <Button fx:id="product_add_button" layoutX="594.0" layoutY="252.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="229.0" text="Add new product with entered data" />
+                     </children></AnchorPane>
             </content>
           </Tab>
             <Tab text="Users">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView id="product_table" fx:id="user_table" editable="true" layoutX="4.0" layoutY="6.0" onMouseClicked="#rowClicked" prefHeight="165.0" prefWidth="894.0">
+                           <columns>
+                              <TableColumn fx:id="user_id" maxWidth="20.0" prefWidth="75.0" text="id" />
+                              <TableColumn fx:id="user_name" maxWidth="250.0" prefWidth="200.0" text="Name" />
+                              <TableColumn fx:id="user_surname" prefWidth="200.0" text="Surname" />
+                              <TableColumn fx:id="user_contact_info" maxWidth="500.0" prefWidth="350.0" text="Contact Info" />
+                              <TableColumn fx:id="user_birthday" maxWidth="150.0" prefWidth="120.0" text="Birthday" />
+                           </columns>
+                        </TableView>
+                        <TextField fx:id="input_user_name" layoutX="78.0" layoutY="198.0" prefHeight="25.0" prefWidth="120.0" />
+                        <TextField fx:id="input_user_surname" layoutX="233.0" layoutY="198.0" prefHeight="25.0" prefWidth="114.0" />
+                        <TextField fx:id="input_user_contact" layoutX="380.0" layoutY="198.0" prefHeight="25.0" prefWidth="166.0" />
+                        <TextField fx:id="input_user_birthday" layoutX="570.0" layoutY="198.0" prefHeight="25.0" prefWidth="103.0" />
+                        <Button fx:id="user_update_button" layoutX="704.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="119.0" text="Update" />
+                        <Button fx:id="user_delete_button" layoutX="26.0" layoutY="257.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="119.0" text="Delete" />
+                        <Label layoutX="79.0" layoutY="176.0" text="Name" />
+                        <Label layoutX="233.0" layoutY="176.0" text="Surname" />
+                        <Label layoutX="380.0" layoutY="177.0" text="Contact Info" />
+                        <Label layoutX="572.0" layoutY="176.0" text="Birthday" />
+                        <Label layoutX="26.0" layoutY="177.0" text="ID" />
+                        <TextField fx:id="input_user_id" editable="false" layoutX="26.0" layoutY="198.0" prefHeight="25.0" prefWidth="32.0" />
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
             <Tab text="Warehouse">

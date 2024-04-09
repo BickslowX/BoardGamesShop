@@ -9,17 +9,15 @@ public class Product {
     private String name;
     private String description;
     private double price;
-    private String imagePath;
     private List<Comment> reviews;
     private double averageRating;
     private int quantity; // Added quantity attribute
 
-    public Product(int id, String name, String description, double price, String imagePath, int quantity) {
+    public Product(int id, String name, String description, double price, int quantity) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
-        this.imagePath = imagePath;
         this.reviews = new ArrayList<>();
         this.averageRating = 0.0;
         this.quantity = quantity; // Initialize quantity
@@ -57,14 +55,6 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public List<Comment> getReviews() {
