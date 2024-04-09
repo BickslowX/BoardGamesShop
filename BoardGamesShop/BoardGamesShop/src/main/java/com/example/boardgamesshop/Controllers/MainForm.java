@@ -1,27 +1,18 @@
 package com.example.boardgamesshop.Controllers;
 
-import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.format.DateTimeFormatter;
+import java.sql.*;
 import java.util.ResourceBundle;
 
-import com.example.boardgamesshop.Model.Product;
+import com.example.boardgamesshop.Model.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import com.example.boardgamesshop.DB.DBHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 
 public class MainForm implements Initializable {
 
@@ -99,28 +90,49 @@ public class MainForm implements Initializable {
     private Button product_add_button;
 
     @FXML
-    private TableColumn<?, ?> user_birthday;
+    private TableColumn<User_struct, Date> user_birthday;
 
     @FXML
-    private TableColumn<?, ?> user_contact_info;
+    private TableColumn<User_struct, String> user_contact_info;
+
+    @FXML
+    private TableColumn<User_struct, Integer> user_id;
+
+    @FXML
+    private TableColumn<User_struct, String> user_name;
+
+    @FXML
+    private TableColumn<User_struct, String> user_surname;
+
+    @FXML
+    private TableColumn<User_struct, String> user_password;
+
+    @FXML
+    private TableView<User_struct> user_table;
+
+    @FXML
+    private Button user_update_button;
 
     @FXML
     private Button user_delete_button;
 
     @FXML
-    private TableColumn<?, ?> user_id;
+    private DatePicker input_user_birthday;
 
     @FXML
-    private TableColumn<?, ?> user_name;
+    private TextField input_user_contact;
 
     @FXML
-    private TableColumn<?, ?> user_surname;
+    private TextField input_user_id;
 
     @FXML
-    private TableView<?> user_table;
+    private TextField input_user_name;
 
     @FXML
-    private Button user_update_button;
+    private TextField input_user_surname;
+
+    @FXML
+    private TextField input_user_password;
 
 
     @FXML @Override
@@ -137,8 +149,20 @@ public class MainForm implements Initializable {
         prod_quantity.setCellValueFactory(new PropertyValueFactory<Prod,Integer>("quantity"));
         prod_price.setCellValueFactory(new PropertyValueFactory<Prod,Double>("price"));
 
+        user_id.setCellValueFactory(new PropertyValueFactory<User_struct, Integer>("id"));
+        user_name.setCellValueFactory(new PropertyValueFactory<User_struct, String>("name"));
+        user_surname.setCellValueFactory(new PropertyValueFactory<User_struct,String>("surname"));
+        user_contact_info.setCellValueFactory(new PropertyValueFactory<User_struct,String>("contact_info"));
+        user_birthday.setCellValueFactory(new PropertyValueFactory<User_struct,Date>("date_of_birth"));
+        user_password.setCellValueFactory(new PropertyValueFactory<User_struct,String>("password"));
+
         try {
             loadProducts();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            loadUsers();
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -173,8 +197,9 @@ public class MainForm implements Initializable {
                 alert.showAndWait();
             }
         });
+
         product_delete_button.setOnAction(event -> {
-            if(!input_name.getText().equals("") && !input_description.getText().equals("") && !input_quantity.getText().equals("") && !input_price.getText().equals(""))
+            if(!input_id.getText().equals(""))
             {
                 int id = Integer.parseInt(input_id.getText());
 
@@ -200,6 +225,7 @@ public class MainForm implements Initializable {
                 alert.showAndWait();
             }
         });
+
         product_add_button.setOnAction(event -> {
             if(!input_name.getText().equals("") && !input_description.getText().equals("") && !input_quantity.getText().equals("") && !input_price.getText().equals(""))
             {
@@ -230,6 +256,67 @@ public class MainForm implements Initializable {
                 alert.showAndWait();
             }
         });
+
+        user_update_button.setOnAction(event -> {
+            if(!input_user_name.getText().equals("") && !input_user_surname.getText().equals("") && !input_user_contact.getText().equals("") && !input_user_password.getText().equals("")  )
+            {
+                int id = Integer.parseInt(input_user_id.getText());
+                String name = input_user_name.getText();
+                String surname = input_user_surname.getText();
+                String contact = input_user_contact.getText();
+                Date birthday = Date.valueOf(input_user_birthday.getValue());
+                String password = input_user_password.getText();
+
+                DBHandler dbHandler = new DBHandler();
+                dbHandler.UpdateUser(id,name, surname, contact, birthday, password);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Notification");
+                alert.setHeaderText("Success");
+                alert.setContentText("User was updated successfully");
+                try {
+                    loadUsers();
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                alert.showAndWait();
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error, some data is empty");
+                alert.setContentText("Enter information and try again");
+                alert.showAndWait();
+            }
+        });
+
+        user_delete_button.setOnAction(event -> {
+            if(!input_user_id.getText().equals(""))
+            {
+                int id = Integer.parseInt(input_user_id.getText());
+
+                DBHandler dbHandler = new DBHandler();
+                dbHandler.DeleteUser(id);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Notification");
+                alert.setHeaderText("Success");
+                alert.setContentText("User was deleted successfully");
+                try {
+                    loadUsers();
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                alert.showAndWait();
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error, product was not deleted successfully");
+                alert.setContentText("Check information and try again");
+                alert.showAndWait();
+            }
+        });
     }
     @FXML
     void rowClicked(MouseEvent event) {
@@ -246,6 +333,16 @@ public class MainForm implements Initializable {
         }
         else if (event.getSource() == product_table) {
             prod = product_table.getSelectionModel().getSelectedItem();
+        }
+        else if (event.getSource() == user_table) {
+            User_struct user = user_table.getSelectionModel().getSelectedItem();
+
+            input_user_id.setText(String.valueOf(user.getId()));
+            input_user_name.setText(String.valueOf(user.getName()));
+            input_user_surname.setText(String.valueOf(user.getSurname()));
+            input_user_contact.setText(String.valueOf(user.getContact_info()));
+            input_user_birthday.setValue(user.getDate_of_birth().toLocalDate());
+            input_user_password.setText(String.valueOf(user.getPassword()));
         }
     }
 
@@ -286,6 +383,74 @@ public class MainForm implements Initializable {
         }
     }
 
+    public class User_struct{
+        private int id;
+        private String name;
+        private String surname;
+        private String contact_info;
+        private Date date_of_birth;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getSurname() {
+            return surname;
+        }
+
+        public void setSurname(String surname) {
+            this.surname = surname;
+        }
+
+        public String getContact_info() {
+            return contact_info;
+        }
+
+        public void setContact_info(String contact_info) {
+            this.contact_info = contact_info;
+        }
+
+        public Date getDate_of_birth() {
+            return date_of_birth;
+        }
+
+        public void setDate_of_birth(Date birthday) {
+            this.date_of_birth = birthday;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public User_struct(int id, String name, String surname, String contact_info, Date date_of_birth, String password) {
+            this.id = id;
+            this.name = name;
+            this.surname = surname;
+            this.contact_info = contact_info;
+            this.date_of_birth = date_of_birth;
+            this.password = password;
+        }
+
+        private String password;
+    }
+
+
     private void loadProducts() throws SQLException, ClassNotFoundException {
         DBHandler dbHandler = new DBHandler();
         Connection con = dbHandler.getDbConnection();
@@ -316,6 +481,44 @@ public class MainForm implements Initializable {
             System.err.println("Error loading products: " + e.getMessage());
         } finally {
             // Close the connection (assuming it's managed by DBHandler)
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " +  e.getMessage());
+            }
+        }
+    }
+
+    private void loadUsers() throws SQLException, ClassNotFoundException {
+        DBHandler dbHandler = new DBHandler();
+        Connection con = dbHandler.getDbConnection();
+        ObservableList<User_struct> users = FXCollections.observableArrayList();
+
+        try (Statement stmt = con.createStatement()) {
+            // Execute the query assuming your table's column names are accurate
+            ResultSet usersList = stmt.executeQuery("SELECT * FROM users");
+
+            // Create an empty ObservableList to store Prod objects
+
+            // Extract data and create Prod objects
+            while (usersList.next()) {
+                int id = usersList.getInt("id");
+                String name = usersList.getString("name");
+                String surname = usersList.getString("surname");
+                String contact_info = usersList.getString("contact_info");
+                Date date_of_birth = usersList.getDate("date_of_birth");
+                String password = usersList.getString("password_hash");
+
+                users.add(new User_struct(id, name, surname, contact_info, date_of_birth, password));
+            }
+
+            // Set the items of the TableView with the populated product list
+            user_table.setItems(users);
+        } catch (SQLException e) {
+            // Handle the SQLException appropriately
+            System.err.println("Error loading products: " + e.getMessage());
+        } finally {
+            // Close the connection
             try {
                 con.close();
             } catch (SQLException e) {

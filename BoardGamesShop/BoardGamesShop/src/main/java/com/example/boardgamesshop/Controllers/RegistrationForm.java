@@ -51,7 +51,7 @@ public class RegistrationForm {
             String regPasswordCheck = reg_password_check_field.getText().trim();
             String regSurname = reg_surname_field.getText().trim();
             String regContactInfo = reg_contact_info_field.getText().trim();
-            DateTimeFormatter pattern = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String regBirthDate = reg_birthday_field.getValue().format(pattern);
 
             if((regPassword.equals(regPasswordCheck))&&!regLogin.isEmpty() && !regPassword.isEmpty() && !regPasswordCheck.isEmpty() && !regSurname.isEmpty() && !regContactInfo.isEmpty())

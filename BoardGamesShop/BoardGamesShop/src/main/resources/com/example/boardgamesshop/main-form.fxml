@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
@@ -80,22 +81,25 @@
                               <TableColumn fx:id="user_id" maxWidth="20.0" prefWidth="75.0" text="id" />
                               <TableColumn fx:id="user_name" maxWidth="250.0" prefWidth="200.0" text="Name" />
                               <TableColumn fx:id="user_surname" prefWidth="200.0" text="Surname" />
-                              <TableColumn fx:id="user_contact_info" maxWidth="500.0" prefWidth="350.0" text="Contact Info" />
+                              <TableColumn fx:id="user_contact_info" maxWidth="500.0" prefWidth="200.0" text="Contact Info" />
                               <TableColumn fx:id="user_birthday" maxWidth="150.0" prefWidth="120.0" text="Birthday" />
+                              <TableColumn fx:id="user_password" maxWidth="150.0" prefWidth="120.0" text="Password" />
                            </columns>
                         </TableView>
                         <TextField fx:id="input_user_name" layoutX="78.0" layoutY="198.0" prefHeight="25.0" prefWidth="120.0" />
                         <TextField fx:id="input_user_surname" layoutX="233.0" layoutY="198.0" prefHeight="25.0" prefWidth="114.0" />
-                        <TextField fx:id="input_user_contact" layoutX="380.0" layoutY="198.0" prefHeight="25.0" prefWidth="166.0" />
-                        <TextField fx:id="input_user_birthday" layoutX="570.0" layoutY="198.0" prefHeight="25.0" prefWidth="103.0" />
-                        <Button fx:id="user_update_button" layoutX="704.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="119.0" text="Update" />
+                        <TextField fx:id="input_user_contact" layoutX="380.0" layoutY="198.0" prefHeight="25.0" prefWidth="130.0" />
+                        <Button fx:id="user_update_button" layoutX="692.0" layoutY="245.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="119.0" text="Update" />
                         <Button fx:id="user_delete_button" layoutX="26.0" layoutY="257.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="119.0" text="Delete" />
                         <Label layoutX="79.0" layoutY="176.0" text="Name" />
                         <Label layoutX="233.0" layoutY="176.0" text="Surname" />
                         <Label layoutX="380.0" layoutY="177.0" text="Contact Info" />
-                        <Label layoutX="572.0" layoutY="176.0" text="Birthday" />
+                        <Label layoutX="536.0" layoutY="175.0" text="Birthday" />
                         <Label layoutX="26.0" layoutY="177.0" text="ID" />
                         <TextField fx:id="input_user_id" editable="false" layoutX="26.0" layoutY="198.0" prefHeight="25.0" prefWidth="32.0" />
+                        <TextField fx:id="input_user_password" layoutX="736.0" layoutY="197.0" prefHeight="25.0" prefWidth="103.0" />
+                        <Label layoutX="738.0" layoutY="175.0" text="Password" />
+                        <DatePicker fx:id="input_user_birthday" layoutX="536.0" layoutY="197.0" />
                      </children>
                   </AnchorPane>
                </content>

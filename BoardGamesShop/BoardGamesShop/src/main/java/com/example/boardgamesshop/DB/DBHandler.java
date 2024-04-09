@@ -117,6 +117,34 @@ public class DBHandler extends Configs {
             System.err.println("Error adding product: " + e.getMessage());
         }
     }
+
+    public void UpdateUser(int id, String name, String surname, String contact, Date birthday, String password) {
+        String update = "UPDATE users SET name = ?, surname = ?, contact_info = ?, date_of_birth = ?, password_hash = ? WHERE id = ?";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(update)) {
+            prSt.setString(1, name);
+            prSt.setString(2, surname);
+            prSt.setString(3, contact);
+            prSt.setDate(4, birthday);
+            prSt.setString(5, password);
+            prSt.setInt(6, id);
+
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error updating user: " + e.getMessage());
+        }
+    }
+
+    public void DeleteUser(int id) {
+        String delete = "DELETE FROM users WHERE id = ?";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(delete)) {
+            prSt.setInt(1, id);
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error deleting user: " + e.getMessage());
+        }
+    }
     public ResultSet getProducts()
     {
         ResultSet resSet = null;
@@ -129,4 +157,5 @@ public class DBHandler extends Configs {
         }
         return resSet;
     }
+
 }
