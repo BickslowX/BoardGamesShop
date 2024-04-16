@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.boardgamesshop.Controllers.MainForm">
    <children>
@@ -20,10 +21,10 @@
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="435.0" prefWidth="650.0">
                      <children>
                         <Button fx:id="leave_review_button" layoutX="14.0" layoutY="229.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="89.0" text="Leave Review" />
-                        <Button layoutX="114.0" layoutY="229.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="93.0" text="Add to Cart" />
+                        <Button fx:id="add_to_cart_button" layoutX="114.0" layoutY="229.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="93.0" text="Add to Cart" />
                         <ListView fx:id="cart_list" layoutX="628.0" layoutY="33.0" prefHeight="176.0" prefWidth="258.0" />
-                        <Button fx:id="remove_from_cart_button" layoutX="628.0" layoutY="223.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="128.0" text="Remove from Cart" />
-                        <Button fx:id="buy_button" layoutX="775.0" layoutY="226.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="111.0" text="Buy" />
+                        <Button fx:id="remove_from_cart_button" layoutX="628.0" layoutY="289.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="128.0" text="Remove from Cart" />
+                        <Button fx:id="buy_button" layoutX="775.0" layoutY="292.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="111.0" text="Buy" />
                         <TableView id="product_table" fx:id="product_table" editable="true" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="504.0">
                           <columns>
                             <TableColumn fx:id="id" maxWidth="20.0" prefWidth="75.0" text="id" />
@@ -34,6 +35,15 @@
                           </columns>
                         </TableView>
                         <Label layoutX="635.0" layoutY="14.0" text="Cart" />
+                        <Label layoutX="628.0" layoutY="221.0" text="Number of Items:" />
+                        <Label layoutX="628.0" layoutY="258.0" text="Total price:" />
+                        <TextField fx:id="cart_number_of_items" alignment="CENTER_RIGHT" editable="false" layoutX="775.0" layoutY="217.0" prefHeight="25.0" prefWidth="111.0" text="0" />
+                        <TextField fx:id="cart_total_price" alignment="CENTER_RIGHT" editable="false" layoutX="775.0" layoutY="254.0" prefHeight="25.0" prefWidth="111.0" text="0.0" />
+                        <Label layoutX="763.0" layoutY="252.0" prefHeight="30.0" prefWidth="14.0" text="\$">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
                      </children>
                   </AnchorPane>
             </content>

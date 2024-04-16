@@ -2,8 +2,10 @@ package com.example.boardgamesshop.Controllers;
 
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-
+import java.lang.Math;
 import com.example.boardgamesshop.Model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +28,10 @@ public class MainForm implements Initializable {
     private Button buy_button;
 
     @FXML
-    private ListView<?> cart_list;
+    private Button add_to_cart_button;
+
+    @FXML
+    private ListView<String> cart_list;
 
     @FXML
     private Button leave_review_button;
@@ -133,6 +138,12 @@ public class MainForm implements Initializable {
 
     @FXML
     private TextField input_user_password;
+
+    @FXML
+    private TextField cart_total_price;
+
+    @FXML
+    private TextField cart_number_of_items;
 
 
     @FXML @Override
@@ -317,6 +328,44 @@ public class MainForm implements Initializable {
                 alert.showAndWait();
             }
         });
+
+        add_to_cart_button.setOnAction(event -> {
+            try{
+                Prod prod = product_table.getSelectionModel().getSelectedItem();
+                ObservableList<String> cart = FXCollections.observableArrayList();
+                cart.addAll(cart_list.getItems());
+                String prod_string = "Product ID: " + prod.getId()+"\nName: "+prod.getName()+"\nPrice: "+ prod.getPrice()+"$";
+                cart.add(prod_string);
+                cart_list.setItems(cart);
+                cart_update(cart);
+            }
+            catch(Exception e)
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error, product was not selected");
+                alert.setContentText("Select product and try again");
+                alert.showAndWait();
+            }
+        });
+
+        remove_from_cart_button.setOnAction(event -> {
+            try{
+                ObservableList<String> cart = FXCollections.observableArrayList();
+                cart.addAll(cart_list.getItems());
+                cart.remove(cart_list.getSelectionModel().getSelectedIndex());
+                cart_list.setItems(cart);
+                cart_update(cart);
+            }
+            catch(Exception e)
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error, product was not selected");
+                alert.setContentText("Select product and try again");
+                alert.showAndWait();
+            }
+        });
     }
     @FXML
     void rowClicked(MouseEvent event) {
@@ -346,6 +395,21 @@ public class MainForm implements Initializable {
         }
     }
 
+    void cart_update(ObservableList<String> cart)
+    {
+        double price = 0;
+        String items_num = String.valueOf(cart.size());
+
+        List<String> list = cart_list.getItems();
+        for( String item : list)
+        {
+            String temp_price = item.split("\n",3)[2];
+            temp_price = temp_price.replace("Price:","").replace("$","").trim();
+            price += Double.parseDouble(temp_price);
+        }
+        cart_number_of_items.setText(String.valueOf(items_num));
+        cart_total_price.setText(String.valueOf(Math.round(price*100)/100.0));
+    }
 
     public class Prod { // Assuming a separate class for Prod structure
         private int id;
