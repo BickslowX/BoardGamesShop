@@ -1,8 +1,12 @@
 package com.example.boardgamesshop.DB;
 
 import com.example.boardgamesshop.Model.User;
+import javafx.scene.control.Alert;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBHandler extends Configs {
 
@@ -145,8 +149,133 @@ public class DBHandler extends Configs {
             System.err.println("Error deleting user: " + e.getMessage());
         }
     }
-    public ResultSet getProducts()
-    {
+
+    public void AddOrder(String currentUserId, List<String> items) throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection();
+
+        try {
+            // Start a transaction to ensure data integrity
+            con.setAutoCommit(false);
+
+            // 1. Check product availability for each item in the order
+            Map<String, Integer> productAvailability = checkProductAvailability(items);
+            for (String productId : items) {
+                // Get the requested quantity for the current product ID
+                int requestedQuantity = getRequestedQuantity(productId, items); // New method to get requested quantity
+                if (productAvailability.get(productId) == null || productAvailability.get(productId) < requestedQuantity) {
+                    throw new InsufficientStockException("Insufficient stock for product: " + productId);
+                }
+            }
+
+            // 2. Insert the order record into the 'orders' table
+            String insertOrder = "INSERT INTO orders (customer_id, order_date, status) VALUES (?, NOW(), 'PENDING')";
+            PreparedStatement orderPrst = con.prepareStatement(insertOrder, Statement.RETURN_GENERATED_KEYS);
+            orderPrst.setString(1, currentUserId);
+            orderPrst.executeUpdate();
+
+            // 3. Get the auto-generated order ID
+            ResultSet rs = orderPrst.getGeneratedKeys();
+            int orderId = 0;
+            if (rs.next()) {
+                orderId = rs.getInt(1);
+            }
+
+            // 4. Insert each item from the 'items' list into the 'order_items' table
+            String insertItem = "INSERT INTO order_items (order_id, product_id) VALUES (?, ?)";
+            PreparedStatement itemPrst = con.prepareStatement(insertItem);
+            for (String productId : items) {
+                itemPrst.setInt(1, orderId);
+                itemPrst.setString(2, productId);
+                itemPrst.addBatch();
+            }
+            itemPrst.executeBatch();
+
+            // 5. Update product quantities after successful order placement
+            String updateQuantity = "UPDATE products SET quantity = quantity - ? WHERE id = ?";
+            PreparedStatement updatePrst = con.prepareStatement(updateQuantity);
+            for (String productId : items) {
+                int requestedQuantity = getRequestedQuantity(productId, items);
+                updatePrst.setInt(1, requestedQuantity);
+                updatePrst.setString(2, productId);
+                updatePrst.addBatch();
+            }
+            updatePrst.executeBatch();
+
+            // Commit the transaction if all inserts are successful
+            con.commit();
+
+        } catch (SQLException | InsufficientStockException e) {
+            // Handle exceptions appropriately (rollback transaction, provide error messages)
+            con.rollback();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alert");
+            alert.setHeaderText("Error");
+            alert.setContentText("Error adding order: " + e.getMessage());
+            alert.showAndWait();
+        } finally {
+            // Close the connection
+            try {
+                con.close();
+            } catch (SQLException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error");
+                alert.setContentText("Error closing connection: " + e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
+
+    // Helper method to check product availability (implementation details based on your schema)
+    private Map<String, Integer> checkProductAvailability(List<String> productIds) throws SQLException, ClassNotFoundException {
+        String checkAvailability = "SELECT id, quantity FROM products WHERE id IN (?)";
+        PreparedStatement checkPrst = getDbConnection().prepareStatement(checkAvailability);
+
+        // Create a comma-separated list of placeholders for product IDs
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < productIds.size(); i++) {
+            placeholders.append("?");
+            if (i != productIds.size() - 1) {
+                placeholders.append(",");
+            }
+        }
+
+        // Set placeholders for product IDs
+        checkPrst.setString(1, placeholders.toString());
+        for (int i = 0; i < productIds.size(); i++) {
+            checkPrst.setString(i+1 , productIds.get(i));
+        }
+
+        Map<String, Integer> availabilityMap = new HashMap<>();
+        ResultSet rs = checkPrst.executeQuery();
+        while (rs.next()) {
+            availabilityMap.put(rs.getString("id"), rs.getInt("quantity"));
+        }
+
+        return availabilityMap;
+    }
+
+    // Method to get requested quantity for a specific product ID from the order list
+    private int getRequestedQuantity(String productId, List<String> items) {
+        int quantity = 0;
+        for (String item : items) {
+            // Assuming items in the list represent product IDs (adapt based on your data structure)
+            if (item.equals(productId)) {
+                quantity++;
+            }
+        }
+        return quantity;
+    }
+
+    // Custom exception class for insufficient stock errors
+    public static class InsufficientStockException extends Exception {
+        public InsufficientStockException(String message) {
+            super(message);
+        }
+    }
+
+
+    public ResultSet getProducts() {
         ResultSet resSet = null;
         String select = "SELECT * FROM products";
         try {
@@ -157,5 +286,4 @@ public class DBHandler extends Configs {
         }
         return resSet;
     }
-
 }

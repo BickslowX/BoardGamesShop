@@ -145,6 +145,44 @@ public class MainForm implements Initializable {
     @FXML
     private TextField cart_number_of_items;
 
+    private String current_user_id;
+    public void setLogin(String current_user_id) {
+        this.current_user_id = current_user_id;
+    }
+
+    @FXML
+    private ComboBox<String> order_changestatus_combobox; // Assuming the combo box contains statuses
+
+    @FXML
+    private Button order_delete_button;
+
+    @FXML
+    private TableView<Order> order_table; // Assuming a class Order exists
+
+    @FXML
+    private TableColumn<Order, String> order_name; // Assuming Order has a getCustomerName() method
+
+    @FXML
+    private TableColumn<Order, String> order_date; // Assuming Order has a getDate() method
+
+    @FXML
+    private TableColumn<Order, String> order_status; // Assuming Order has a getStatus() method
+
+    @FXML
+    private Button filter_button;
+
+    @FXML
+    private DatePicker filter_date;
+
+    @FXML
+    private ComboBox<String> filter_name; // Assuming the combo box contains customer names
+
+    @FXML
+    private ComboBox<String> filter_status; // Assuming the combo box contains statuses
+
+    private ObservableList<Order> orders; // ObservableList to store Order objects
+
+
 
     @FXML @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -167,6 +205,19 @@ public class MainForm implements Initializable {
         user_birthday.setCellValueFactory(new PropertyValueFactory<User_struct,Date>("date_of_birth"));
         user_password.setCellValueFactory(new PropertyValueFactory<User_struct,String>("password"));
 
+        /*orders = FXCollections.observableArrayList();
+        order_table.setItems(orders);
+        order_name.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        order_date.setCellValueFactory(new PropertyValueFactory<>("date"));
+        order_status.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+
+        try {
+            loadOrders();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        */
         try {
             loadProducts();
         } catch (SQLException | ClassNotFoundException e) {
@@ -366,6 +417,99 @@ public class MainForm implements Initializable {
                 alert.showAndWait();
             }
         });
+
+        buy_button.setOnAction(event -> {
+            if(cart_list.getItems() != null && !cart_list.getItems().isEmpty())
+            {
+                List<String> order = cart_list.getItems();
+                List<String> items = new ArrayList<>();
+                for( String item : order)
+                {
+                    items.add( item.split("\n",3)[0].replace("Product ID: ","").trim());
+                }
+
+                try {
+                    DBHandler dbHandler = new DBHandler();
+                    dbHandler.AddOrder(current_user_id,items);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Notification");
+                    alert.setHeaderText("Success");
+                    alert.setContentText("Order was added successfully");
+                    alert.showAndWait();
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    loadProducts();
+                    ObservableList<String> cart = FXCollections.observableArrayList();
+                    cart_list.setItems(cart);
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setContentText("Error");
+                alert.showAndWait();
+            }
+        });
+
+        /*filter_button.setOnAction(event -> {
+            // Implement filtering logic based on selected date, name, and status
+            orders.clear();
+            // Add filtering conditions here
+            // For example:
+            if (filter_date.getValue() != null) {
+                // Filter by date
+            }
+            if (!filter_name.getSelectionModel().getSelectedItem().isEmpty()) {
+                // Filter by name
+            }
+            if (!filter_status.getSelectionModel().getSelectedItem().isEmpty()) {
+                // Filter by status
+            }
+            loadOrders(filter_date.getValue(), filter_name.getSelectionModel().getSelectedItem(), filter_status.getSelectionModel().getSelectedItem());
+        });
+
+        // Order status change button action
+        order_changestatus_combobox.setOnAction(event -> {
+            if (order_table.getSelectionModel().getSelectedItem() != null) {
+                String newStatus = order_changestatus_combobox.getSelectionModel().getSelectedItem();
+                Order selectedOrder = order_table.getSelectionModel().getSelectedItem();
+                // Update order status in database
+                try {
+                    DBHandler dbHandler = new DBHandler();
+                    dbHandler.updateOrderStatus(selectedOrder.getId(), newStatus);
+                    selectedOrder.setStatus(newStatus); // Update order object status
+                    order_table.refresh(); // Refresh table view
+                } catch (SQLException | ClassNotFoundException e) {
+                    // Handle database errors
+                    e.printStackTrace();
+                    // Show error message to user
+                }
+            }
+        });
+
+        // Order delete button action
+        order_delete_button.setOnAction(event -> {
+            if (order_table.getSelectionModel().getSelectedItem() != null) {
+                Order selectedOrder = order_table.getSelectionModel().getSelectedItem();
+                // Delete order from database
+                try {
+                    DBHandler dbHandler = new DBHandler();
+                    dbHandler.deleteOrder(selectedOrder.getId());
+                    orders.remove(selectedOrder); // Remove order from observable list
+                    order_table.refresh(); // Refresh table view
+                } catch (SQLException | ClassNotFoundException e) {
+                    // Handle database errors
+                    e.printStackTrace();
+                    // Show error message to user
+                }
+            }
+        });*/
+
     }
     @FXML
     void rowClicked(MouseEvent event) {
@@ -395,8 +539,7 @@ public class MainForm implements Initializable {
         }
     }
 
-    void cart_update(ObservableList<String> cart)
-    {
+    void cart_update(ObservableList<String> cart)    {
         double price = 0;
         String items_num = String.valueOf(cart.size());
 
@@ -514,6 +657,10 @@ public class MainForm implements Initializable {
         private String password;
     }
 
+    public class Order{
+
+    }
+
 
     private void loadProducts() throws SQLException, ClassNotFoundException {
         DBHandler dbHandler = new DBHandler();
@@ -591,6 +738,18 @@ public class MainForm implements Initializable {
         }
     }
 
+    /*private void loadOrders() {
+        // Implement logic to load orders from database based on filters
+        try {
+            DBHandler dbHandler = new DBHandler();
+            orders.clear();
+            orders.addAll(dbHandler.getOrders(filterDate, filterName, filterStatus));
+        } catch (SQLException | ClassNotFoundException e) {
+            // Handle database errors
+            e.printStackTrace();
+            // Show error message to user
+        }
+    }*/
 
 
 

@@ -2,12 +2,16 @@ package com.example.boardgamesshop.Controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ResourceBundle;
-
+import java.sql.*;
 import com.example.boardgamesshop.DB.DBHandler;
 import com.example.boardgamesshop.Model.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -48,15 +52,35 @@ public class LoginForm {
                 if(log)
                 {
                     log_in_button.getScene().getWindow().hide();
+                    String current_user_id;
+
+                    DBHandler dbHandler = new DBHandler();
+                    String query = "SELECT id FROM users WHERE name = ? AND password_hash = ?";
+                    try {
+                        Connection con = dbHandler.getDbConnection();
+                        PreparedStatement pstmt = con.prepareStatement(query);
+                        pstmt.setString(1, loginText);
+                        pstmt.setString(2, loginPassword);
+                        ResultSet usersList = pstmt.executeQuery();
+                        usersList.next();
+                        current_user_id = String.valueOf(usersList.getInt("id"));
+                    } catch (SQLException | ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(getClass().getResource("/com/example/boardgamesshop/main-form.fxml"));
 
                     try {
                         loader.load();
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+
+                    MainForm controller = loader.getController();
+                    controller.setLogin(current_user_id);
+
                     Parent root = loader.getRoot();
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root));
