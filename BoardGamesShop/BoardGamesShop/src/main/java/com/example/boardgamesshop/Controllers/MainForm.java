@@ -2,6 +2,7 @@ package com.example.boardgamesshop.Controllers;
 
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -34,7 +35,7 @@ public class MainForm implements Initializable {
     private ListView<String> cart_list;
 
     @FXML
-    private Button leave_review_button;
+    private Button reviews_button;
 
     @FXML
     private TableView<Prod> product_table;
@@ -179,6 +180,9 @@ public class MainForm implements Initializable {
 
     @FXML
     private DatePicker filter_date;
+
+    @FXML
+    private DatePicker filter_date_end;
 
     @FXML
     private ComboBox<String> filter_name; // Assuming the combo box contains customer names
@@ -460,6 +464,7 @@ public class MainForm implements Initializable {
                 }
                 try {
                     loadProducts();
+                    loadOrders();
                     ObservableList<String> cart = FXCollections.observableArrayList();
                     cart_list.setItems(cart);
                 } catch (SQLException | ClassNotFoundException e) {
@@ -476,15 +481,23 @@ public class MainForm implements Initializable {
         });
 
         filter_button.setOnAction(event -> {
-            if (filter_date.getValue() != null && filter_name.getSelectionModel().getSelectedItem()!=null && filter_status.getSelectionModel().getSelectedItem()!=null) {
+            LocalDate startDate = filter_date.getValue();
+            LocalDate endDate = filter_date_end.getValue();
+
+            // Check if both dates are selected
+            if (startDate != null && endDate != null && !filter_name.getSelectionModel().getSelectedItem().isEmpty() && !filter_status.getSelectionModel().getSelectedItem().isEmpty()) {
                 ObservableList<Order> temp = order_table.getItems();
-                ObservableList<Order> filter = FXCollections.observableArrayList();
+                ObservableList<Order> filtered = FXCollections.observableArrayList();
                 for (Order order : temp) {
-                    if (order.getCustomer_name().equals(filter_name.getSelectionModel().getSelectedItem()) && order.getOrder_date().toLocalDate().equals(filter_date.getValue()) && order.getStatus().equals(filter_status.getSelectionModel().getSelectedItem())) {
-                        filter.add(order);
+                    LocalDate orderDate = order.getOrder_date().toLocalDate();
+                    if (order.getCustomer_name().equals(filter_name.getSelectionModel().getSelectedItem())
+                            && order.getStatus().equals(filter_status.getSelectionModel().getSelectedItem())
+                            && !orderDate.isBefore(startDate) // Order date is after or equal to start date
+                            && !orderDate.isAfter(endDate)) { // Order date is before or equal to end date
+                        filtered.add(order);
                     }
                 }
-                order_table.setItems(filter);
+                order_table.setItems(filtered);
             }
         });
 
@@ -514,8 +527,8 @@ public class MainForm implements Initializable {
                 } catch (SQLException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                order_changestatus_combobox = null;
-                order_changestatus_combobox.setItems(statuses);
+                //order_changestatus_combobox = null;
+                //order_changestatus_combobox.setItems(statuses);
                 alert.showAndWait();
             }
             else
@@ -596,7 +609,8 @@ public class MainForm implements Initializable {
             Order order = order_table.getSelectionModel().getSelectedItem();
 
             filter_status.getSelectionModel().select(order.getStatus());
-            filter_date.setValue(order.getOrder_date().toLocalDate());
+            filter_date.setValue(order.getOrder_date().toLocalDate().minusYears(1));
+            filter_date_end.setValue(order.getOrder_date().toLocalDate());
             filter_name.getSelectionModel().select(order.getCustomer_name());
         }
     }
