@@ -1,6 +1,9 @@
 package com.example.boardgamesshop.DB;
 
+import com.example.boardgamesshop.Controllers.MainForm;
 import com.example.boardgamesshop.Model.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.sql.*;
@@ -11,6 +14,48 @@ import java.util.Map;
 public class DBHandler extends Configs {
 
     Connection dbConnection;
+
+    public ObservableList<String> getAdministratorsData() throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection();
+        ObservableList<String> admins = FXCollections.observableArrayList();
+
+        try (Statement stmt = con.createStatement()) {
+            // Execute the query assuming your table's column names are accurate
+            ResultSet usersList = stmt.executeQuery("SELECT * FROM administrators");
+
+            // Create an empty ObservableList to store Prod objects
+
+            // Extract data and create Prod objects
+            while (usersList.next()) {
+                String id = usersList.getString("user_id");
+                admins.add(id);
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return admins;
+    }
+
+    public ObservableList<String> getEmployeesData() throws SQLException, ClassNotFoundException {
+        Connection con = getDbConnection();
+        ObservableList<String> emp = FXCollections.observableArrayList();
+
+        try (Statement stmt = con.createStatement()) {
+            // Execute the query assuming your table's column names are accurate
+            ResultSet usersList = stmt.executeQuery("SELECT * FROM employees");
+
+            // Create an empty ObservableList to store Prod objects
+
+            // Extract data and create Prod objects
+            while (usersList.next()) {
+                String id = usersList.getString("user_id");
+                emp.add(id);
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return emp;
+    }
 
     public Connection getDbConnection() throws ClassNotFoundException, SQLException {
         String connectionString = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;

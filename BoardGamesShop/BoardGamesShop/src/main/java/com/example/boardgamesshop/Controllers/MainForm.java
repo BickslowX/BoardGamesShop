@@ -1,5 +1,6 @@
 package com.example.boardgamesshop.Controllers;
 
+import java.io.*;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.lang.Math;
+import java.util.Scanner;
+
 import com.example.boardgamesshop.Model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -146,11 +149,6 @@ public class MainForm implements Initializable {
     @FXML
     private TextField cart_number_of_items;
 
-    private String current_user_id;
-    public void setLogin(String current_user_id) {
-        this.current_user_id = current_user_id;
-    }
-
     @FXML
     private ComboBox<String> order_changestatus_combobox; // Assuming the combo box contains statuses
 
@@ -192,7 +190,25 @@ public class MainForm implements Initializable {
 
     private ObservableList<Order> orders; // ObservableList to store Order objects
 
+    @FXML
+    private Tab products_tab;
 
+
+    private static String current_user_id ;
+    private String current_user_status ;
+
+    public void setLogin(String current_user_id) {
+        this.current_user_id = current_user_id;
+    }
+    public String readStringFromFile() throws IOException {
+        String line = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader("userid.txt"))) {
+            line = reader.readLine();
+        } catch (IOException e) {
+            System.err.println("Error reading user data from file: " + e.getMessage());
+        }
+        return line;
+    }
 
     @FXML @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -221,6 +237,32 @@ public class MainForm implements Initializable {
         order_name.setCellValueFactory(new PropertyValueFactory<>("customer_name"));
         order_date.setCellValueFactory(new PropertyValueFactory<>("order_date"));
         order_status.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        try {
+            setLogin(readStringFromFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            if(isAdmin(current_user_id)) {
+                current_user_status = "admin";
+            }
+            else if(isEmployee(current_user_id))
+            {
+                current_user_status = "employee";
+                user_delete_button.setDisable(true);
+            }
+            else
+            {
+                current_user_status = "user";
+                user_delete_button.setDisable(true);
+                order_changestatus_combobox.setDisable(true);
+                products_tab.setDisable(true);
+
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             loadOrders();
@@ -453,7 +495,7 @@ public class MainForm implements Initializable {
 
                 try {
                     DBHandler dbHandler = new DBHandler();
-                    dbHandler.AddOrder(current_user_id,items);
+                    dbHandler.AddOrder(String.valueOf(current_user_id),items);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Notification");
                     alert.setHeaderText("Success");
@@ -509,7 +551,6 @@ public class MainForm implements Initializable {
             }
         });
 
-        // Order status change button action
         order_changestatus_combobox.setOnAction(event -> {
             if (order_table.getSelectionModel().getSelectedItem() != null) {
                 String newStatus = order_changestatus_combobox.getSelectionModel().getSelectedItem();
@@ -801,7 +842,18 @@ public class MainForm implements Initializable {
         }
     }
 
+    public boolean isAdmin(String index) throws SQLException, ClassNotFoundException {
+        // Assuming the table data is stored in an array or list of administrators
+        DBHandler dbHandler = new DBHandler();
+        ObservableList<String> administrators = dbHandler.getAdministratorsData(); // Replace with your logic to get administrators data
+        return administrators.contains(index); // Check if administrator exists at the given index
+    }
 
+    public boolean isEmployee(String index) throws SQLException, ClassNotFoundException {
+        DBHandler dbHandler = new DBHandler();
+        ObservableList<String> employees = dbHandler.getEmployeesData(); // Replace with your logic to get employees data
+        return employees.contains(index); // Check if employee exists at the given index
+    }
     private void loadProducts() throws SQLException, ClassNotFoundException {
         DBHandler dbHandler = new DBHandler();
         Connection con = dbHandler.getDbConnection();
@@ -845,35 +897,70 @@ public class MainForm implements Initializable {
         Connection con = dbHandler.getDbConnection();
         ObservableList<User_struct> users = FXCollections.observableArrayList();
 
-        try (Statement stmt = con.createStatement()) {
-            // Execute the query assuming your table's column names are accurate
-            ResultSet usersList = stmt.executeQuery("SELECT * FROM users");
+        if(current_user_status!="user") {
+            try (Statement stmt = con.createStatement()) {
+                // Execute the query assuming your table's column names are accurate
+                ResultSet usersList = stmt.executeQuery("SELECT * FROM users");
 
-            // Create an empty ObservableList to store Prod objects
+                // Create an empty ObservableList to store Prod objects
 
-            // Extract data and create Prod objects
-            while (usersList.next()) {
-                int id = usersList.getInt("id");
-                String name = usersList.getString("name");
-                String surname = usersList.getString("surname");
-                String contact_info = usersList.getString("contact_info");
-                Date date_of_birth = usersList.getDate("date_of_birth");
-                String password = usersList.getString("password_hash");
+                // Extract data and create Prod objects
+                while (usersList.next()) {
+                    int id = usersList.getInt("id");
+                    String name = usersList.getString("name");
+                    String surname = usersList.getString("surname");
+                    String contact_info = usersList.getString("contact_info");
+                    Date date_of_birth = usersList.getDate("date_of_birth");
+                    String password = usersList.getString("password_hash");
 
-                users.add(new User_struct(id, name, surname, contact_info, date_of_birth, password));
-            }
+                    users.add(new User_struct(id, name, surname, contact_info, date_of_birth, password));
+                }
 
-            // Set the items of the TableView with the populated product list
-            user_table.setItems(users);
-        } catch (SQLException e) {
-            // Handle the SQLException appropriately
-            System.err.println("Error loading products: " + e.getMessage());
-        } finally {
-            // Close the connection
-            try {
-                con.close();
+                // Set the items of the TableView with the populated product list
+                user_table.setItems(users);
             } catch (SQLException e) {
-                System.err.println("Error closing connection: " +  e.getMessage());
+                // Handle the SQLException appropriately
+                System.err.println("Error loading products: " + e.getMessage());
+            } finally {
+                // Close the connection
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
+        }
+        else
+        {
+            try (Statement stmt = con.createStatement()) {
+                String query = "SELECT * FROM users WHERE id = ?";
+                    PreparedStatement pstmt = con.prepareStatement(query);
+                    pstmt.setString(1, current_user_id);
+                ResultSet usersList = pstmt.executeQuery();
+                // Extract data and create Prod objects
+                while (usersList.next()) {
+                    int id = usersList.getInt("id");
+                    String name = usersList.getString("name");
+                    String surname = usersList.getString("surname");
+                    String contact_info = usersList.getString("contact_info");
+                    Date date_of_birth = usersList.getDate("date_of_birth");
+                    String password = usersList.getString("password_hash");
+
+                    users.add(new User_struct(id, name, surname, contact_info, date_of_birth, password));
+                }
+
+                // Set the items of the TableView with the populated product list
+                user_table.setItems(users);
+            } catch (SQLException e) {
+                // Handle the SQLException appropriately
+                System.err.println("Error loading products: " + e.getMessage());
+            } finally {
+                // Close the connection
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
             }
         }
     }
@@ -883,33 +970,64 @@ public class MainForm implements Initializable {
         Connection con = dbHandler.getDbConnection();
         ObservableList<Order> orders = FXCollections.observableArrayList();
 
-        try (Statement stmt = con.createStatement()) {
-            // Execute the query assuming your table's column names are accurate
-            ResultSet orderList = stmt.executeQuery("SELECT * FROM orders");
+        if(!current_user_status.equals("user")) {
+            try (Statement stmt = con.createStatement()) {
+                // Execute the query assuming your table's column names are accurate
+                ResultSet orderList = stmt.executeQuery("SELECT * FROM orders");
 
-            // Create an empty ObservableList to store Prod objects
+                // Create an empty ObservableList to store Prod objects
 
-            // Extract data and create Prod objects
-            while (orderList.next()) {
-                int id = orderList.getInt("id");
-                String customerID = orderList.getString("customer_id");
-                Date order_date = orderList.getDate("order_date");
-                String status = orderList.getString("status");
-                orders.add(new Order(id, customerID,"", order_date, status));
-            }
+                // Extract data and create Prod objects
+                while (orderList.next()) {
+                    int id = orderList.getInt("id");
+                    String customerID = orderList.getString("customer_id");
+                    Date order_date = orderList.getDate("order_date");
+                    String status = orderList.getString("status");
+                    orders.add(new Order(id, customerID, "", order_date, status));
+                }
 
-            // Set the items of the TableView with the populated product list
-            order_table.setItems(orders);
-            order_table.setItems(orders);
-        } catch (SQLException e) {
-            // Handle the SQLException appropriately (e.g., display error message)
-            System.err.println("Error loading products: " + e.getMessage());
-        } finally {
-            // Close the connection (assuming it's managed by DBHandler)
-            try {
-                con.close();
+                // Set the items of the TableView with the populated product list
+                order_table.setItems(orders);
             } catch (SQLException e) {
-                System.err.println("Error closing connection: " +  e.getMessage());
+                // Handle the SQLException appropriately (e.g., display error message)
+                System.err.println("Error loading products: " + e.getMessage());
+            } finally {
+                // Close the connection (assuming it's managed by DBHandler)
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
+        }
+        else
+        {
+            try (Statement stmt = con.createStatement()) {
+                String query = "SELECT * FROM orders WHERE customer_id = ?";
+                PreparedStatement pstmt = con.prepareStatement(query);
+                pstmt.setString(1, current_user_id);
+                ResultSet orderList = pstmt.executeQuery();
+                // Extract data and create Prod objects
+                while (orderList.next()) {
+                    int id = orderList.getInt("id");
+                    String customerID = orderList.getString("customer_id");
+                    Date order_date = orderList.getDate("order_date");
+                    String status = orderList.getString("status");
+                    orders.add(new Order(id, customerID, "", order_date, status));
+                }
+
+                // Set the items of the TableView with the populated product list
+                order_table.setItems(orders);
+            } catch (SQLException e) {
+                // Handle the SQLException appropriately
+                System.err.println("Error loading orders: " + e.getMessage());
+            } finally {
+                // Close the connection
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
             }
         }
     }

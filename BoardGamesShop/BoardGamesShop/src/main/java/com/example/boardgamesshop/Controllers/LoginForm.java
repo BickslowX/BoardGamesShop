@@ -1,5 +1,8 @@
 package com.example.boardgamesshop.Controllers;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -47,12 +50,12 @@ public class LoginForm {
         log_in_button.setOnAction(event -> {
             String loginText = loginField.getText().trim();
             String loginPassword = pswField.getText().trim();
+            String current_user_id = "";
             if(!loginText.isEmpty() && !loginPassword.isEmpty()) {
                 boolean log = loginUser(loginText,loginPassword);
                 if(log)
                 {
                     log_in_button.getScene().getWindow().hide();
-                    String current_user_id;
 
                     DBHandler dbHandler = new DBHandler();
                     String query = "SELECT id FROM users WHERE name = ? AND password_hash = ?";
@@ -63,7 +66,7 @@ public class LoginForm {
                         pstmt.setString(2, loginPassword);
                         ResultSet usersList = pstmt.executeQuery();
                         usersList.next();
-                        current_user_id = String.valueOf(usersList.getInt("id"));
+                        current_user_id = usersList.getString("id");
                     } catch (SQLException | ClassNotFoundException e) {
                         throw new RuntimeException(e);
                     }
@@ -78,10 +81,20 @@ public class LoginForm {
                         throw new RuntimeException(e);
                     }
 
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("userid.txt", true))) {
+                                writer.write(current_user_id);
+                            writer.newLine();
+                        } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+
                     MainForm controller = loader.getController();
                     controller.setLogin(current_user_id);
 
                     Parent root = loader.getRoot();
+
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root));
                     stage.showAndWait();
