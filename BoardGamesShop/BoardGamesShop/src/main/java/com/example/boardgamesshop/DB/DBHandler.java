@@ -184,6 +184,7 @@ public class DBHandler extends Configs {
         }
     }
 
+
     public void DeleteUser(int id) {
         String delete = "DELETE FROM users WHERE id = ?";
 
@@ -333,6 +334,30 @@ public class DBHandler extends Configs {
             prSt.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error updating order: " + e.getMessage());
+        }
+    }
+
+    public void promote_to_manager(int id) {
+        String insert = "INSERT INTO employees (id) VALUES (?)";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(insert)) {
+            prSt.setString(1, String.valueOf(id));
+
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error promoting: " + e.getMessage());
+        }
+    }
+
+    public void promote_to_admin(int id) {
+        String insert = "INSERT INTO administrators (id) VALUES (?)";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(insert)) {
+            prSt.setString(1, String.valueOf(id));
+
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error promoting: " + e.getMessage());
         }
     }
 

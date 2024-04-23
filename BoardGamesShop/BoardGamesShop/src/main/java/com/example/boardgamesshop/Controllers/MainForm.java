@@ -188,6 +188,12 @@ public class MainForm implements Initializable {
     @FXML
     private ComboBox<String> filter_status; // Assuming the combo box contains statuses
 
+    @FXML
+    private Button promote_to_manager;
+
+    @FXML
+    private Button promote_to_admin;
+
     private ObservableList<Order> orders; // ObservableList to store Order objects
 
     @FXML
@@ -250,6 +256,8 @@ public class MainForm implements Initializable {
             else if(isEmployee(current_user_id))
             {
                 current_user_status = "employee";
+                promote_to_manager.setDisable(true);
+                promote_to_admin.setDisable(true);
                 user_delete_button.setDisable(true);
             }
             else
@@ -413,6 +421,64 @@ public class MainForm implements Initializable {
                 alert.setTitle("Alert");
                 alert.setHeaderText("Error, some data is empty");
                 alert.setContentText("Enter information and try again");
+                alert.showAndWait();
+            }
+        });
+
+        promote_to_manager.setOnAction(event -> {
+            if(!input_user_id.getText().equals(""))
+            {
+                int id = Integer.parseInt(input_user_id.getText());
+
+                DBHandler dbHandler = new DBHandler();
+                dbHandler.promote_to_manager(id);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Notification");
+                alert.setHeaderText("Success");
+                alert.setContentText("User was promoted successfully");
+                try {
+                    loadUsers();
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                alert.showAndWait();
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error");
+                alert.setContentText("Check info and again");
+                alert.showAndWait();
+            }
+        });
+
+        promote_to_admin.setOnAction(event -> {
+            if(!input_user_id.getText().equals(""))
+            {
+                int id = Integer.parseInt(input_user_id.getText());
+
+                DBHandler dbHandler = new DBHandler();
+                dbHandler.promote_to_admin(id);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Notification");
+                alert.setHeaderText("Success");
+                alert.setContentText("User was promoted successfully");
+                try {
+                    loadUsers();
+                } catch (SQLException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                alert.showAndWait();
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error");
+                alert.setContentText("Check info and again");
                 alert.showAndWait();
             }
         });

@@ -105,6 +105,8 @@
                         <TextField fx:id="input_user_password" layoutX="736.0" layoutY="197.0" prefHeight="25.0" prefWidth="103.0" />
                         <Label layoutX="738.0" layoutY="175.0" text="Password" />
                         <DatePicker fx:id="input_user_birthday" layoutX="536.0" layoutY="197.0" />
+                        <Button fx:id="promote_to_manager" layoutX="215.0" layoutY="257.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="151.0" text="Promote to manager" />
+                        <Button fx:id="promote_to_admin" layoutX="435.0" layoutY="258.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="151.0" text="Promote to administrator " />
                      </children>
                   </AnchorPane>
                </content>
