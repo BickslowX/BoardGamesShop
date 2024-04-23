@@ -267,23 +267,34 @@ public class DBHandler extends Configs {
         return quantity;
     }
 
+    public void deleteOrder(int id) {
+        String delete = "DELETE FROM orders WHERE id = ?";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(delete)) {
+            prSt.setInt(1, id);
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error deleting order: " + e.getMessage());
+        }
+    }
+
+    public void updateOrderStatus(int id, String newStatus) {
+        String update = "UPDATE orders SET status = ? WHERE id = ?";
+
+        try (PreparedStatement prSt = getDbConnection().prepareStatement(update)) {
+            prSt.setString(1, newStatus);
+            prSt.setInt(2, id);
+
+            prSt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error updating order: " + e.getMessage());
+        }
+    }
+
     // Custom exception class for insufficient stock errors
     public static class InsufficientStockException extends Exception {
         public InsufficientStockException(String message) {
             super(message);
         }
-    }
-
-
-    public ResultSet getProducts() {
-        ResultSet resSet = null;
-        String select = "SELECT * FROM products";
-        try {
-            PreparedStatement prSt = getDbConnection().prepareStatement(select);
-            resSet = prSt.executeQuery();
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return resSet;
     }
 }

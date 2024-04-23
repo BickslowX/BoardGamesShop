@@ -71,6 +71,7 @@
                         <Label layoutX="467.0" layoutY="14.0" text="Status" />
                         <ComboBox fx:id="order_changestatus_combobox" layoutX="621.0" layoutY="310.0" prefHeight="25.0" prefWidth="120.0" />
                         <Label layoutX="487.0" layoutY="314.0" text="Change Order Status" />
+                        <Button fx:id="cancel_filter_button" layoutX="836.0" layoutY="42.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" text="X" />
                      </children></AnchorPane>
                </content>
             </Tab>
@@ -135,7 +136,7 @@
                   </AnchorPane>
                </content>
             </Tab>
-            <Tab text="Warehouse">
+            <Tab text="Chat">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>
