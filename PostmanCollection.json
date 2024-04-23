@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "22012fe7-ae93-4de8-9883-3ec8960922f8",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34458770"
+	},
+	"item": [
+		{
+			"name": "PostUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"postuser\",\r\n    \"surname\": \"test\",\r\n    \"contact_info\": \"fggd\",\r\n    \"date_of_birth\": \"2024-04-15\",\r\n    \"password_hash\": \"postman\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saveUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saveUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUsers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/getUsers",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"getUsers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutUser",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Admin123\",\r\n    \"surname\": \"User\",\r\n    \"contact_info\": \"admin@example.com\",\r\n    \"date_of_birth\": \"1980-01-01\",\r\n    \"password_hash\": \"333\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/updateUser/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"updateUser",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUser",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/deleteUser/10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deleteUser",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Catan\",\r\n    \"description\": \"Board game for resource management and trading\",\r\n    \"price\": 9.99,\r\n    \"quantity\": 99\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/saveProduct",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"saveProduct"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetProducts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/getProducts",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"getProducts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutProduct",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Settlers of Catan\",\r\n    \"description\": \"Board game for resource management and trading\",\r\n    \"price\": 49.99,\r\n    \"quantity\": 93\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/updateProduct/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"updateProduct",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteProduct",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/deleteProduct/9",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"deleteProduct",
+						"9"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
