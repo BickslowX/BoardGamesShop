@@ -81,7 +81,7 @@ public class LoginForm {
                         throw new RuntimeException(e);
                     }
 
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("userid.txt", true))) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("userid.txt", false))) {
                                 writer.write(current_user_id);
                             writer.newLine();
                         } catch (IOException e) {
@@ -90,8 +90,6 @@ public class LoginForm {
 
 
 
-                    MainForm controller = loader.getController();
-                    controller.setLogin(current_user_id);
 
                     Parent root = loader.getRoot();
 

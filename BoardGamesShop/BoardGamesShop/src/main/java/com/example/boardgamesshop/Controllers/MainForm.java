@@ -561,7 +561,7 @@ public class MainForm implements Initializable {
 
                 try {
                     DBHandler dbHandler = new DBHandler();
-                    dbHandler.AddOrder(String.valueOf(current_user_id),items);
+                    dbHandler.AddOrder(current_user_id,items);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Notification");
                     alert.setHeaderText("Success");
