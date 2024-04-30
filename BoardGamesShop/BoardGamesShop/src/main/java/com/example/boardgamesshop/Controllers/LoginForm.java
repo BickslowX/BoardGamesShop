@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -71,6 +74,13 @@ public class LoginForm {
                         throw new RuntimeException(e);
                     }
 
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("userid.txt", false))) {
+                        writer.write(current_user_id);
+                        writer.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(getClass().getResource("/com/example/boardgamesshop/main-form.fxml"));
 
@@ -80,16 +90,6 @@ public class LoginForm {
                     catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("userid.txt", false))) {
-                                writer.write(current_user_id);
-                            writer.newLine();
-                        } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-
-
 
                     Parent root = loader.getRoot();
 

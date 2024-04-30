@@ -4,6 +4,7 @@ module com.example.boardgamesshop {
 
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires org.controlsfx.controls;
 
     opens com.example.boardgamesshop to javafx.fxml;
     exports com.example.boardgamesshop;

@@ -12,13 +12,17 @@ import java.util.Scanner;
 
 import com.example.boardgamesshop.Model.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import com.example.boardgamesshop.DB.DBHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 public class MainForm implements Initializable {
 
@@ -194,8 +198,6 @@ public class MainForm implements Initializable {
     @FXML
     private Button promote_to_admin;
 
-    private ObservableList<Order> orders; // ObservableList to store Order objects
-
     @FXML
     private Tab products_tab;
 
@@ -204,7 +206,7 @@ public class MainForm implements Initializable {
     private String current_user_status ;
 
     public void setLogin(String current_user_id) {
-        this.current_user_id = current_user_id;
+        MainForm.current_user_id = current_user_id;
     }
     public String readStringFromFile() throws IOException {
         String line = "";
@@ -237,8 +239,6 @@ public class MainForm implements Initializable {
         user_birthday.setCellValueFactory(new PropertyValueFactory<User_struct,Date>("date_of_birth"));
         user_password.setCellValueFactory(new PropertyValueFactory<User_struct,String>("password"));
 
-        orders = FXCollections.observableArrayList();
-        order_table.setItems(orders);
         order_id.setCellValueFactory(new PropertyValueFactory<>("id"));
         order_name.setCellValueFactory(new PropertyValueFactory<>("customer_name"));
         order_date.setCellValueFactory(new PropertyValueFactory<>("order_date"));
@@ -685,6 +685,42 @@ public class MainForm implements Initializable {
             }
         });
 
+        reviews_button.setOnAction(event ->{
+            if(product_table.getSelectionModel().getSelectedItem() != null) {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/com/example/boardgamesshop/comments-form.fxml"));
+
+                Prod prod = product_table.getSelectionModel().getSelectedItem();
+                String id = String.valueOf(prod.getId());
+                String name = String.valueOf(prod.getName());
+
+                CommentsController controller = new CommentsController();
+                controller.SetCurrentProduct(current_user_id, id, name);
+                loader.setController(controller);
+
+                try {
+                    loader.load();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Parent root = loader.getRoot();
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Alert");
+                alert.setHeaderText("Error, product was not selected");
+                alert.setContentText("Select product and try again");
+                alert.showAndWait();
+            }
+        });
+
+
     }
     @FXML
     void rowClicked(MouseEvent event) {
@@ -920,6 +956,7 @@ public class MainForm implements Initializable {
         ObservableList<String> employees = dbHandler.getEmployeesData(); // Replace with your logic to get employees data
         return employees.contains(index); // Check if employee exists at the given index
     }
+
     private void loadProducts() throws SQLException, ClassNotFoundException {
         DBHandler dbHandler = new DBHandler();
         Connection con = dbHandler.getDbConnection();

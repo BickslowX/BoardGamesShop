@@ -36,12 +36,6 @@ public class Customer extends User {
         product.addRating(rating);
     }
 
-    public void leaveComment(Product product, String comment) {
-        // Implement logic to create a new Comment object and associate it with the product
-        Comment newComment = new Comment(this, product, comment);
-        product.addComment(newComment);
-    }
-
     public void chatWithManager(Order order) {
         // Implement logic to initiate a chat with the manager assigned to the order (e.g., opening a chat window)
         System.out.println("Initiating chat with manager for order #" + order.getId());

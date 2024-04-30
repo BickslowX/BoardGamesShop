@@ -1,6 +1,7 @@
 package com.example.boardgamesshop.DB;
 
 import com.example.boardgamesshop.Controllers.MainForm;
+import com.example.boardgamesshop.Model.Comment;
 import com.example.boardgamesshop.Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -358,6 +359,34 @@ public class DBHandler extends Configs {
             prSt.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error promoting: " + e.getMessage());
+        }
+    }
+
+    public void AddReview(Comment comment) {
+        String query = "INSERT INTO comments (author_id, product_id, content, rating) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = getDbConnection().prepareStatement(query)) {
+            pstmt.setInt(1, comment.getAuthor_id()); // Replace with actual author ID if retrieved elsewhere
+            pstmt.setInt(2, comment.getProduct_id());
+            pstmt.setString(3, comment.getContent());
+            pstmt.setInt(4, comment.getRating());
+
+            pstmt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void AddReply(int author_id, int product_id, String content, int parent_comment_id) {
+        String query = "INSERT INTO comments (author_id, product_id, content, parent_comment_id) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = getDbConnection().prepareStatement(query)) {
+            pstmt.setInt(1, author_id); // Replace with actual author ID if retrieved elsewhere
+            pstmt.setInt(2, product_id);
+            pstmt.setString(3, content);
+            pstmt.setInt(4, parent_comment_id);
+
+            pstmt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
